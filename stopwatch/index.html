@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grand Stopwatch with Name and Quotes</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: radial-gradient(circle, #000428, #004e92);
+            font-family: 'Merriweather', serif;
+            color: #ffffff;
+            margin: 0;
+            text-align: center;
+        }
+        .stopwatch {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+        }
+        #display {
+            font-size: 3em;
+            margin-bottom: 20px;
+            color: #f39c12;
+            font-weight: bold;
+            text-shadow: 0 0 10px rgba(243, 156, 18, 0.8);
+        }
+        #laps {
+            margin-top: 20px;
+            color: #f39c12;
+            text-shadow: 0 0 5px rgba(243, 156, 18, 0.8);
+            font-size: 1.2em;
+        }
+        button {
+            margin: 10px;
+            padding: 15px 30px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            background: #f39c12;
+            color: #000428;
+            transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 6px 20px rgba(243, 156, 18, 0.5);
+        }
+        button:hover {
+            background: #e67e22;
+            transform: scale(1.1);
+            box-shadow: 0 6px 30px rgba(243, 156, 18, 0.7);
+        }
+        button:active {
+            transform: scale(1.05);
+        }
+        .lap-time {
+            margin: 5px;
+        }
+        #name {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        #quote {
+            margin-top: 20px;
+            font-size: 1.5em;
+            color: #f39c12;
+            text-shadow: 0 0 5px rgba(243, 156, 18, 0.8);
+        }
+    </style>
+</head>
+<body>
+    <div class="stopwatch">
+        <div id="name">My Grand Stopwatch</div>
+        <div id="display">00:00:00</div>
+        <button id="startStopBtn" onclick="startStop()">Start</button>
+        <button id="lapBtn" onclick="recordLap()">Lap</button>
+        <button id="resetBtn" onclick="reset()">Reset</button>
+        <div id="laps"></div>
+        <div id="quote"></div>
+    </div>
+    <script>
+        let timer;
+        let isRunning = false;
+        let startTime;
+        let elapsedTime = 0;
+        let laps = [];
+        const quotes = [
+            "Time is what we want most, but what we use worst. - William Penn",
+            "The key is in not spending time, but in investing it. - Stephen R. Covey",
+            "Your time is limited, don't waste it living someone else's life. - Steve Jobs",
+            "The two most powerful warriors are patience and time. - Leo Tolstoy",
+            "Time is the most valuable thing a man can spend. - Theophrastus",
+            "Lost time is never found again. - Benjamin Franklin",
+            "Time flies over us, but leaves its shadow behind. - Nathaniel Hawthorne",
+            "You may delay, but time will not. - Benjamin Franklin"
+        ];
+
+        function startStop() {
+            if (isRunning) {
+                clearInterval(timer);
+                elapsedTime += Date.now() - startTime;
+                document.getElementById('startStopBtn').textContent = 'Start';
+            } else {
+                startTime = Date.now();
+                timer = setInterval(updateDisplay, 100);
+                document.getElementById('startStopBtn').textContent = 'Stop';
+            }
+            isRunning = !isRunning;
+        }
+
+        function reset() {
+            clearInterval(timer);
+            isRunning = false;
+            elapsedTime = 0;
+            laps = [];
+            document.getElementById('startStopBtn').textContent = 'Start';
+            document.getElementById('display').textContent = '00:00:00';
+            document.getElementById('laps').innerHTML = '';
+            displayQuote();
+        }
+
+        function updateDisplay() {
+            const time = elapsedTime + (Date.now() - startTime);
+            const hours = Math.floor(time / 3600000);
+            const minutes = Math.floor((time % 3600000) / 60000);
+            const seconds = Math.floor((time % 60000) / 1000);
+
+            document.getElementById('display').textContent =
+                `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+        }
+
+        function pad(number) {
+            return number.toString().padStart(2, '0');
+        }
+
+        function recordLap() {
+            const time = elapsedTime + (Date.now() - startTime);
+            const hours = Math.floor(time / 3600000);
+            const minutes = Math.floor((time % 3600000) / 60000);
+            const seconds = Math.floor((time % 60000) / 1000);
+            const lapTime = `${pad(hours)}:${pad(minutes)}:${pad(seconds)}`;
+            laps.push(lapTime);
+            displayLaps();
+        }
+
+        function displayLaps() {
+            const lapsContainer = document.getElementById('laps');
+            lapsContainer.innerHTML = '';
+            laps.forEach((lapTime, index) => {
+                const lapElement = document.createElement('div');
+                lapElement.classList.add('lap-time');
+                lapElement.textContent = `Lap ${index + 1}: ${lapTime}`;
+                lapsContainer.appendChild(lapElement);
+            });
+        }
+
+        function displayQuote() {
+            const randomIndex = Math.floor(Math.random() * quotes.length);
+            document.getElementById('quote').textContent = quotes[randomIndex];
+        }
+
+        // Display an initial quote when the page loads
+        displayQuote();
+    </script>
+</body>
+</html>
